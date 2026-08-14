@@ -1,0 +1,43 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import {createRequire} from 'node:module';
+const require=createRequire(import.meta.url);
+let playwright;try{playwright=require('playwright');}catch{playwright=require('C:/Users/27654/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright');}
+const {chromium}=playwright;const chromePath='C:/Program Files/Google/Chrome/Application/chrome.exe';
+const browser=await chromium.launch({headless:true,...(fs.existsSync(chromePath)?{executablePath:chromePath}:{})});
+const page=await browser.newPage({viewport:{width:1440,height:1000}});const errors=[];
+page.on('pageerror',(error)=>errors.push(error.message));
+await page.goto(process.env.BASE_URL||'http://127.0.0.1:8765/',{waitUntil:'networkidle'});
+await page.click('#tutorial-skip');
+const result=await page.evaluate(async()=>{
+  const g=window.__palmDemo,s=g.state;
+  const prophecy=(id)=>g.engine.announce(g.DATA.prophecies.find((p)=>p.id===id));
+  const place=(id)=>{const o=g.objectState.get(id);s.x=o.x;s.y=o.y;g.select(id);return o;};
+  const act=(action)=>g.interact(action);
+
+  prophecy('p02');place('bell_1');await act('take');await act('ring');await act('drop');g.enterNextRoom();
+  prophecy('p03');place('tablet_4');await act('take');await act('drop');g.enterNextRoom();
+  prophecy('p05');place('musicBox_9');await act('ring');await act('ring');await act('ring');place('mirror_8');await act('align');g.enterNextRoom();
+  prophecy('p08');place('cup_12');await act('take');place('bucket_14');g.select('cup_12');await act('use');await act('drop');g.select('bucket_14');await act('take');await act('pour');await act('drop');g.enterNextRoom();
+  prophecy('p09');place('pistol_17');await act('take');await act('fire');await g.aimAt(760,280);g.enterNextRoom();
+  prophecy('p14');place('phone_23');await act('call');g.enterNextRoom();
+  const locked=s.storyArc;
+  prophecy('p15');place('rope_27');await act('take');place('scissors_28');g.select('rope_27');await act('use');place('rail_29');g.select('rope_27');await act('use');g.enterNextRoom();
+  prophecy('p20');place('screen_34');await act('toggle');g.enterNextRoom();
+  prophecy('p21');for(let i=0;i<3;i+=1){const id=`fragment_8_${i}`;place(id);await act('take');await act('throw');await g.aimAt(790+i*15,220+i*20);}g.enterNextRoom();
+  g.select('pistol_17');await act('drop');g.select('rope_27');await act('drop');
+  prophecy('p26');for(let i=0;i<3;i+=1){const id=`fragment_9_${i}`;place(id);await act('take');}g.select('fragment_9_0');await act('dropAll');
+  g.enterNextRoom();
+  return {locked,room:s.room,ended:s.ended,resolved:g.engine.resolvedProphecies.map((p)=>p.id),unlocks:[...s.roomUnlocks],ending:document.querySelector('#ending-title').textContent,carryover:JSON.parse(localStorage.getItem('palm-fortress-loop1'))};
+});
+assert.equal(result.locked,'K');
+assert.equal(result.ended,true);
+assert.deepEqual(result.unlocks,[0,1,2,3,4,5,6,7,8,9]);
+assert.deepEqual(result.resolved,['p02','p03','p05','p08','p09','p14','p15','p20','p21','p26']);
+assert(result.ending.length>0);
+assert.equal(result.carryover.storyArc,'K');
+assert.deepEqual(result.carryover.resolvedProphecies,result.resolved);
+assert(result.carryover.fixed.length>0&&result.carryover.definedAttributes.length>0,'second loop carryover must preserve fixed reality');
+assert.equal(errors.length,0,errors.join('; '));
+await browser.close();
+console.log(`PASS: full ten-room player route locked K and reached ${result.ending}`);

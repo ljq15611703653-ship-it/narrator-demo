@@ -1,29 +1,28 @@
 <!doctype html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>《返潮》完整攻略与因果关系图</title>
+  <link rel="icon" href="data:,">
+  <title>掌中堡垒 · 完整操作攻略</title>
   <link rel="stylesheet" href="guide.css">
 </head>
 <body>
-  <nav><a href="index.html">返回游戏</a><a href="#tutorial">教程</a><a href="#routes">27条路径</a><a href="#operations">全部操作点</a><a href="#graph">关系图</a></nav>
-  <header>
-    <span>公开制作与攻略文档</span>
-    <h1>《返潮》完整攻略</h1>
-    <p>这不是唯一解清单。它列出全部可操作内容、成立条件、长期结果，以及过去裁剪与未来契约如何互相限制。</p>
-    <div id="metrics"></div>
+  <header class="guide-head">
+    <div><span>第一周目 · 全操作解析</span><h1>掌中堡垒完整攻略</h1></div>
+    <a href="index.html">返回游戏</a>
   </header>
   <main>
-    <section id="tutorial"><h2>教程与核心规则</h2><div id="tutorial-list"></div></section>
-    <section id="routes"><h2>3×3×3 全路径</h2><p>第一幕由真实物理状态自然触发，第二幕由你实际维持的见证关系形成，第三幕由最终行动形成。不是三个选择菜单。</p><div id="route-grid"></div></section>
-    <section id="past"><h2>过去裁剪与局部最优反噬</h2><div class="table-wrap"><table><thead><tr><th>编号</th><th>旁白原句</th><th>保留历史</th><th>即时状态</th><th>远期反噬</th></tr></thead><tbody id="past-table"></tbody></table></div></section>
-    <section id="future"><h2>未来契约与实现链</h2><div id="prophecy-list"></div></section>
-    <section id="operations"><h2>全部可操作点</h2><p>每项至少具有不同前置条件或不同状态后果。无法诚实执行的输入不会被偷偷改成相近答案。</p><div class="table-wrap"><table><thead><tr><th>编号</th><th>操作</th><th>可用说法</th><th>结果类型</th><th>长期读取</th></tr></thead><tbody id="action-table"></tbody></table></div></section>
-    <section id="graph"><h2>带时间的有向因果图</h2><p>箭头表示裁剪、开启、关闭、占用或跨周目固化。图只显示策略骨架；上表给出全部细项。</p><div class="mermaid" id="mermaid-graph"></div></section>
-    <section id="loops"><h2>多周目真实差异</h2><div class="loop-grid"><article><b>第一遍：母亲的故事</b><p>苏遥掌握旁白操作。结尾保存具体过去、被冲走的物品、人物存活、信任、知识和未支付代价。</p></article><article><b>第二遍：女儿的追问</b><p>具体认证在仍保留至少20条历史时成为硬锚；缺失物不会复原，人物不会无故复活，上一轮破坏会留在门墙上。</p></article><article><b>第三遍：讲述权分裂</b><p>柯宁要求“看见谁、谁做过”必须具体。旁白失去所有保留多个行为者的含糊过去，只能提交具体行动者或沉默。</p></article></div></section>
-    <section id="final-hold"><h2>真实计时与暂停</h2><p>一遍完整讲述的游戏时间最低约九分钟：第一幕至少两分钟、第二幕至少四分钟、第三幕至少三分钟。顶棚滴水、供电闪断、轻物漂移、人物换位、回水和痕迹混合会持续改变可用组合，因此不是等待进度条。按 P 或空格可以随时暂停。按回车打开行动输入时，世界立即暂停；浏览器模型解析行动、旁白计算策略的全过程也不推进水位、NPC、预言或受力计时。关闭输入后恢复到打开前的运行或暂停状态。</p><p>“以身作界”不是一句结局选择。必须先用救援绳、背景架或电闸建立真实受力边界，再开始闭眼姿态并持续按住 H 6.5 秒。画面逐渐全黑；松开会恢复信息，也会让旁白重新获得介入窗口。主动暂停会诚实冻结这段时间。</p></section>
+    <nav class="toc" id="toc"></nav>
+    <section id="start"><h2>先把玩法说清楚</h2><div class="plain-rules" id="plain-rules"></div></section>
+    <section id="routes"><h2>12条大故事线与120个现场</h2><p>第8层不是结局文案，而是整条故事线；第7层就是你所在的房间。故事线在进入第7室前按既有事实永久压实，不弹选择菜单。锁定后可以回头，十间房都会变成该路线自己的现场。若多个条件同时成立，优先级为 K → I → F → D → E → B → C → G → H → J → A → L。</p><div id="route-list"></div></section>
+    <section id="prophecies"><h2>30条预言：逐条怎么抢先兑现</h2><p>这里只列玩家可操作路径。你不做，旁白也会在期限前通过同一套事件规则把整句兑现。</p><div class="grid" id="prophecy-list"></div></section>
+    <section id="speech"><h2>言出法随与过去压缩</h2><div id="speech-list"></div></section>
+    <section id="objects"><h2>全部物件</h2><label class="search">筛选物件<input id="object-search" type="search" placeholder="枪、试纸、碎片 3-12……"></label><p>核心物件各有专用动作；300个碎片逐件存在、逐件可搬、投、垫、标记和进入关系图。碎片共享通用物理规则，不冒充300种不同机制。</p><div id="object-list"></div></section>
+    <section id="attributes"><h2>8层属性如何读</h2><div id="attribute-guide"></div></section>
+    <section id="endings"><h2>25个结局精确达成</h2><p>结局由“最后带回的锚点类别”与“教程后言出法随次数”组成5×5。若同时携带多类，优先级依次为枪弹、铃声、蓝线/水、证据/印章、光/三棱镜。</p><div class="grid" id="ending-list"></div></section>
   </main>
-  <script type="module" src="src/guide.js?v=20260813f"></script>
+  <script src="world-data.js"></script>
+  <script src="guide.js"></script>
 </body>
 </html>

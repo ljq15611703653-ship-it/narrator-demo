@@ -9,6 +9,7 @@
 .llm-test.*
 artifacts-*.png
 route-*.png
+qa-*.png
 *.pid
 node_modules/
 .openai/.tmp/

@@ -1,68 +1,172 @@
 <!doctype html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>返潮</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#10120f">
   <link rel="icon" href="data:,">
+  <title>掌中堡垒：第一轮</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <main id="game-shell">
-    <header id="topbar">
-      <div class="identity">
-        <span class="mark">第 <i id="loop-mark">1</i> 遍</span>
-          <strong>返潮</strong>
+  <main class="app-shell">
+    <header class="topbar">
+      <div class="brand-block">
+        <span class="eyebrow">第一轮 / 掌中堡垒</span>
+        <h1 id="room-title">掌纹庭</h1>
       </div>
-      <div class="clock-group">
-        <a class="guide-link" href="guide.html" target="_blank">攻略与关系图</a>
-        <span id="act-label">校准</span>
-        <time id="world-clock">00:00.0</time>
-        <span id="pause-state">运行中</span>
+      <div class="chapter-progress" aria-label="章节进度">
+        <span id="segment-label">序：学会触碰</span>
+        <div class="progress-track"><i id="segment-progress"></i></div>
+      </div>
+      <div class="time-block">
+        <a class="guide-link" href="guide.html">完整攻略</a>
+        <span id="game-time">00:00</span>
+        <button class="icon-button" id="pause-button" title="暂停" aria-label="暂停">Ⅱ</button>
       </div>
     </header>
 
-    <section id="stage-wrap">
-      <canvas id="stage" width="960" height="576" aria-label="游戏场景"></canvas>
-      <div id="prophecy" class="prophecy hidden">
-        <span class="prophecy-kicker">已认证的未来</span>
-        <p id="prophecy-text"></p>
-        <div class="timer-track"><i id="prophecy-progress"></i></div>
+    <section class="prophecy-strip" id="prophecy-strip" aria-live="polite">
+      <div class="prophecy-mark">未来</div>
+      <div class="prophecy-copy">
+        <strong id="prophecy-text">尚无被固定的未来</strong>
+        <span id="prophecy-detail"></span>
       </div>
-      <div id="curtain" class="curtain">
-        <div class="title-block">
-          <span>交互叙事原型</span>
-          <h1>返潮</h1>
-          <p>“再讲一遍。别替她省略。”</p>
-          <button id="start-button">开始讲述</button>
-        </div>
-      </div>
+      <div class="prophecy-clock" id="prophecy-clock">--</div>
     </section>
 
-    <section id="lower-panel">
-      <div id="transcript" aria-live="polite"></div>
-      <aside id="status-panel">
-        <div class="status-head">
-          <strong>仍成立的事故史</strong>
-          <span id="world-count">648</span>
+    <div class="workspace">
+      <section class="play-column">
+        <div class="game-frame panel">
+          <canvas id="game" width="960" height="540" aria-label="掌中堡垒游戏场景"></canvas>
+          <div class="crosshair" id="crosshair"></div>
+          <div class="near-prompt" id="near-prompt"></div>
+          <div class="cinematic hidden" id="cinematic">
+            <span id="cinematic-speaker"></span>
+            <p id="cinematic-text"></p>
+          </div>
+          <div class="tutorial-card" id="tutorial-card">
+            <span id="tutorial-step">1 / 8</span>
+            <h2 id="tutorial-title">先试着走动</h2>
+            <p id="tutorial-text">用 WASD 或方向键走到发光的物件旁边。时间在教程里不会流动。</p>
+            <div class="tutorial-actions">
+              <button id="tutorial-skip" class="quiet-button">跳过教程</button>
+              <button id="tutorial-next" class="primary-button" disabled>下一步</button>
+            </div>
+          </div>
+          <div class="ending-screen hidden" id="ending-screen">
+            <div class="ending-copy">
+              <span>第一轮结束</span>
+              <h2 id="ending-title"></h2>
+              <p id="ending-body"></p>
+              <div class="legacy-list" id="legacy-list"></div>
+              <div class="ending-actions">
+                <button id="restart-button" class="quiet-button">重新开始</button>
+                <a class="primary-button link-button" href="guide.html">查看具体攻略</a>
+              </div>
+            </div>
+          </div>
         </div>
-        <div id="world-meter"><i></i></div>
-        <dl id="status-list"></dl>
+
+        <div class="command-deck panel">
+          <div class="selection-row">
+            <div>
+              <span class="label">靠近 / 选中</span>
+              <strong id="selected-name">没有物件</strong>
+              <span id="selected-state"></span>
+            </div>
+            <div class="position-status">
+              <span id="player-pose">站立</span>
+              <span id="hands-status">双手空着</span>
+            </div>
+          </div>
+          <div class="action-row" id="action-row"></div>
+          <div class="inventory-row">
+            <span class="label">身上</span>
+            <div id="inventory" class="inventory"></div>
+          </div>
+          <div class="utterance-drawer" id="utterance-drawer">
+            <div class="utterance-head">
+              <div>
+                <span class="label">言出法随</span>
+                <strong>你现在有能力压实哪些结果</strong>
+              </div>
+              <span class="small-copy">说得越清楚，前提越多；无论成败，过去都会被定死。</span>
+            </div>
+            <div id="utterance-options" class="utterance-options"></div>
+            <div class="llm-row">
+              <span id="llm-status">自然语言：检查中</span>
+              <button type="button" id="llm-enable" class="quiet-button hidden">加载网页本地LLM</button>
+            </div>
+            <form id="utterance-form" class="utterance-form">
+              <input id="utterance-input" type="text" autocomplete="off" maxlength="80" placeholder="按 Enter 停表并开口，例如：枪里有弹">
+              <button type="submit">说出</button>
+            </form>
+          </div>
+        </div>
+
+        <div class="event-log panel" id="event-log" aria-live="polite"></div>
+      </section>
+
+      <aside class="side-column panel">
+        <nav class="tabs" aria-label="信息面板">
+          <button class="active" data-tab="graph">关系图</button>
+          <button data-tab="facts">定型</button>
+          <button data-tab="objects">附近</button>
+          <button data-tab="rules">规则</button>
+        </nav>
+        <section class="tab-view active" data-view="graph">
+          <div class="strategic-state" id="strategic-state"></div>
+          <div class="graph-tools">
+            <span id="graph-count">已揭示 0 / 0</span>
+            <button id="graph-center" class="icon-button" title="重新排布">◎</button>
+          </div>
+          <svg id="fact-graph" viewBox="0 0 430 650" role="img" aria-label="已揭示的时间关系图"></svg>
+          <details class="attribute-ledger">
+            <summary>查看已确定 / 未确定属性</summary>
+            <div id="attribute-status"></div>
+          </details>
+          <div class="graph-detail" id="graph-detail">只显示已经揭示的节点与关系。图不是攻略，它就是后台那张图的可见部分。</div>
+        </section>
+        <section class="tab-view" data-view="facts">
+          <h2>不能再改写的事</h2>
+          <div id="fixed-facts" class="fact-list"></div>
+        </section>
+        <section class="tab-view" data-view="objects">
+          <div class="object-summary">
+            <strong id="object-count">0 件</strong>
+            <span>这一带每件东西都能碰，也都会留下状态。</span>
+          </div>
+          <div id="nearby-objects" class="nearby-list"></div>
+        </section>
+        <section class="tab-view" data-view="rules">
+          <h2>目前记得的规则</h2>
+          <ol class="rule-list" id="rule-list">
+            <li>靠近物件后才能操作；拿起后它会从地面消失。</li>
+            <li><strong>言出法随：</strong>你能实际感知或压实某项结果时，可以直接声明它；只要仍有合法世界线，结果就必须成立。</li>
+            <li>言出法随只能确定这次行动直接压实的结果，不能顺带规定后续。你能保证枪响，不能直接保证某人中枪或死亡。</li>
+            <li>你定义现在；声音选择并公开一段过去。</li>
+            <li>定型会沿已知关系传播，所有必然结果永久存在。</li>
+            <li>未来提示音响起后，整句客观预言一定发生。</li>
+            <li>预言不命令你的想法或行为；你可以抢先占据实现。</li>
+          </ol>
+          <div class="asset-audit" id="asset-audit"></div>
+          <a class="primary-button link-button guide-cta" href="guide.html">查看全物件、全状态与25结局攻略</a>
+        </section>
       </aside>
-    </section>
-
-    <section id="command-bar" class="hidden">
-      <span class="prompt">&gt;</span>
-      <input id="command-input" autocomplete="off" spellcheck="false" placeholder="描述你要做的事，例如：把盆放在漏水下面">
-      <button id="submit-command">执行</button>
-      <button id="cancel-command" class="icon-button" title="取消">×</button>
-    </section>
-
-    <div id="tutorial-card" class="hidden">
-      <span id="tutorial-step"></span>
-      <p id="tutorial-text"></p>
     </div>
   </main>
-  <script type="module" src="src/game.js?v=20260813f"></script>
+
+  <div class="pause-screen hidden" id="pause-screen">
+    <div>
+      <span>时间停在这里</span>
+      <h2>暂停</h2>
+      <button class="primary-button" id="resume-button">继续</button>
+    </div>
+  </div>
+
+  <script src="world-data.js"></script>
+  <script src="rule-engine.js"></script>
+  <script src="game.js"></script>
 </body>
 </html>
